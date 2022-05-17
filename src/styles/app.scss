@@ -1,0 +1,36 @@
+@import './variables';
+@import './toolbar.scss';
+@import './canvas.scss';
+
+* {
+  &,
+  &::after,
+  &::before {
+    box-sizing: border-box;
+    outline: none;
+    padding: 0;
+    margin: 0;
+  }
+}
+
+html,
+body {
+  font-family: 'Source Code Pro', 'Inter', sans-serif;
+  display: flex;
+  flex-direction: column;
+  font-size: 16px;
+  flex: 1 0 auto;
+  width: 100%;
+  min-height: 100vh;
+  box-sizing: border-box;
+  background: var(--main-light);
+  scrollbar-color: transparent;
+}
+
+#root,
+.App {
+  flex: 1 1 auto;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
