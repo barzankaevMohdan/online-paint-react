@@ -36,7 +36,7 @@ export const Toolbar = () => {
       }
     }))
     canvasState.clear()
-    axios.post(`http://localhost:5000/image?id=${params.id}`, {img: canvasState.canvas.toDataURL()})
+    axios.post(`https://mohdan-online-paint.herokuapp.com/image?id=${params.id}`, {img: canvasState.canvas.toDataURL()}, {withCredentials: true})
   }
 
   return (

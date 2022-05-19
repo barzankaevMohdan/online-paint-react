@@ -44,6 +44,11 @@ export default class Brush extends Tool {
     }
   }
 
+  draw(x, y) {
+    this.ctx.lineTo(x, y)
+    this.ctx.stroke()
+  }
+
   static draw(ctx, x, y, color, lineWidth) {
     ctx.lineTo(x, y)
     ctx.stroke()

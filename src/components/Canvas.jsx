@@ -20,7 +20,7 @@ export const Canvas = observer(() => {
   useEffect(() => {
     canvasState.setCanvas(canvasRef.current)
     let ctx = canvasRef.current.getContext('2d')
-    axios.get(`http://localhost:5000/image?id=${params.id}`)
+    axios.get(`https://mohdan-online-paint.herokuapp.com/image?id=${params.id}`, {withCredentials: true})
       .then(response => {
         const img = new Image()
         img.src = response.data
@@ -34,7 +34,7 @@ export const Canvas = observer(() => {
 
   useEffect(() => {
     if (canvasState.username) {
-      const socket = new WebSocket(`ws://localhost:5000/`)
+      const socket = new WebSocket(`ws://mohdan-online-paint.herokuapp.com`)
       canvasState.setSocket(socket)
       canvasState.setSessionId(params.id)
       // дефолтный инструмент при инициализации - кисточка
@@ -100,7 +100,7 @@ export const Canvas = observer(() => {
   }
 
   const postImage = () => {
-    axios.post(`http://localhost:5000/image?id=${params.id}`, {img: canvasState.canvas.toDataURL()})
+    axios.post(`https://mohdan-online-paint.herokuapp.com/image?id=${params.id}`, {img: canvasState.canvas.toDataURL()}, {withCredentials: true})
   }
 
   const connectHandler = () => {
