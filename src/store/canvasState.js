@@ -2,15 +2,30 @@ import { makeAutoObservable } from "mobx";
 
 class CanvasState {
   canvas = null
+  socket = null
+  sessionId = null
   undoList = []
   redoList = []
+  username = ''
 
   constructor() {
     makeAutoObservable(this)
   }
 
+  setSessionId(id) {
+    this.sessionId = id
+  }
+
+  setSocket(socket) {
+    this.socket = socket
+  }
+
   setCanvas(canvas) {
     this.canvas = canvas
+  }
+
+  setUsername(name) {
+    this.username = name
   }
 
   pushToUndo(data) {
@@ -45,6 +60,11 @@ class CanvasState {
       ctx.clearRect(0, 0, this.canvas.width, this.canvas.height)
       ctx.drawImage(img, 0, 0, this.canvas.width, this.canvas.height)
     }
+  }
+
+  clear() {
+    const ctx = this.canvas.getContext('2d')
+    ctx.clearRect(0, 0, this.canvas.width, this.canvas.height)
   }
 }
 
