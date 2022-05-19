@@ -34,7 +34,7 @@ export const Canvas = observer(() => {
 
   useEffect(() => {
     if (canvasState.username) {
-      const socket = new WebSocket(`ws://mohdan-online-paint.herokuapp.com`)
+      const socket = new WebSocket(`https://mohdan-online-paint.herokuapp.com`)
       canvasState.setSocket(socket)
       canvasState.setSessionId(params.id)
       // дефолтный инструмент при инициализации - кисточка
