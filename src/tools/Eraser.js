@@ -11,7 +11,7 @@ export default class Eraser extends Brush {
       this.socket.send(JSON.stringify({
         method: 'draw',
         id: this.id,
-        figure: {
+        draw: {
           type: 'eraser',
           x: e.pageX - e.target.offsetLeft,
           y: e.pageY - e.target.offsetTop,
@@ -21,7 +21,7 @@ export default class Eraser extends Brush {
     }
   }
 
-  static draw(ctx, x, y, lineWidth) {
+  static staticDraw(ctx, x, y, lineWidth) {
     ctx.lineTo(x, y)
     ctx.stroke()
     ctx.strokeStyle = "white"

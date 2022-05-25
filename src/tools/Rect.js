@@ -17,7 +17,7 @@ export default class Rect extends Tool {
     this.socket.send(JSON.stringify({
       method: 'draw',
       id: this.id,
-      figure: {
+      draw: {
         type: 'rect',
         x: this.startX,
         y: this.startY,
@@ -31,7 +31,7 @@ export default class Rect extends Tool {
     this.socket.send(JSON.stringify({
       method: 'draw',
       id: this.id,
-      figure: {
+      draw: {
         type: 'finish',
       }
     }))

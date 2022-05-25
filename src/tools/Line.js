@@ -25,7 +25,7 @@ export default class Line extends Tool {
     this.socket.send(JSON.stringify({
       method: 'draw',
       id: this.id,
-      figure: {
+      draw: {
         type: 'line',
         x: e.pageX-e.target.offsetLeft,
         y: e.pageY-e.target.offsetTop,
@@ -38,7 +38,7 @@ export default class Line extends Tool {
     this.socket.send(JSON.stringify({
       method: 'draw',
       id: this.id,
-      figure: {
+      draw: {
         type: 'finish',
       }
     }))

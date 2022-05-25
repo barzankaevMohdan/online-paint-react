@@ -17,7 +17,7 @@ export default class Circle extends Tool {
     this.socket.send(JSON.stringify({
       method: 'draw',
       id: this.id,
-      figure: {
+      draw: {
         type: 'circle',
         x: this.startX,
         y: this.startY,
@@ -30,7 +30,7 @@ export default class Circle extends Tool {
     this.socket.send(JSON.stringify({
       method: 'draw',
       id: this.id,
-      figure: {
+      draw: {
         type: 'finish',
       }
     }))

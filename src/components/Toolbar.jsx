@@ -7,7 +7,7 @@ import canvasState from '../store/canvasState'
 import Circle from '../tools/Circle'
 import Eraser from '../tools/Eraser'
 import Line from '../tools/Line'
-import axios from 'axios'
+import api from '../Api/ImageService'
 
 export const Toolbar = () => {
   const params = useParams()
@@ -31,12 +31,34 @@ export const Toolbar = () => {
     canvasState.socket.send(JSON.stringify({
       method: 'draw',
       id: params.id,
-      figure: {
+      draw: {
         type: 'clear',
       }
     }))
     canvasState.clear()
-    axios.post(`https://mohdan-online-paint.herokuapp.com/image?id=${params.id}`, {img: canvasState.canvas.toDataURL()}, {withCredentials: true})
+    api.postImage(params.id, canvasState.canvas.toDataURL())
+  }
+
+  const undo = () => {
+    canvasState.socket.send(JSON.stringify({
+      id: params.id,
+      method: 'draw',
+      draw: {
+        type: 'undo',
+      }
+    }))
+    api.postImage(params.id, canvasState.canvas.toDataURL())
+  }
+
+  const redo = () => {
+    canvasState.socket.send(JSON.stringify({
+      id: params.id,
+      method: 'draw',
+      draw: {
+        type: 'redo',
+      }
+    }))
+    api.postImage(params.id, canvasState.canvas.toDataURL())
   }
 
   return (
@@ -47,8 +69,8 @@ export const Toolbar = () => {
       <button className='toolbar__btn eraser' onClick={() => toolState.setTool(new Eraser(canvasState.canvas, canvasState.socket, canvasState.sessionId))}/>
       <button className='toolbar__btn line' onClick={() => toolState.setTool(new Line(canvasState.canvas, canvasState.socket, canvasState.sessionId))}/>
       <input className='toolbar__btn' type="color" onChange={e => changeColor(e)} />
-      <button className='toolbar__btn undo' onClick={() => canvasState.undo()}/>
-      <button className='toolbar__btn redo' onClick={() => canvasState.redo()}/>
+      <button className='toolbar__btn undo' onClick={() => undo()}/>
+      <button className='toolbar__btn redo' onClick={() => redo()}/>
       <button className='toolbar__btn save' onClick={() => download()}/>
       <button className='toolbar__btn delete' onClick={() => clear()}/>
     </div>

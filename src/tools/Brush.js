@@ -16,7 +16,7 @@ export default class Brush extends Tool {
     this.socket.send(JSON.stringify({
       method: 'draw',
       id: this.id,
-      figure: {
+      draw: {
         type: 'finish',
       }
     }))
@@ -33,7 +33,7 @@ export default class Brush extends Tool {
       this.socket.send(JSON.stringify({
         method: 'draw',
         id: this.id,
-        figure: {
+        draw: {
           type: 'brush',
           x: e.pageX - e.target.offsetLeft,
           y: e.pageY - e.target.offsetTop,
@@ -49,7 +49,7 @@ export default class Brush extends Tool {
     this.ctx.stroke()
   }
 
-  static draw(ctx, x, y, color, lineWidth) {
+  static staticDraw(ctx, x, y, color, lineWidth) {
     ctx.lineTo(x, y)
     ctx.stroke()
     ctx.strokeStyle = color

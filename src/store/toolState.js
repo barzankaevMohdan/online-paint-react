@@ -2,24 +2,31 @@ import { makeAutoObservable } from "mobx";
 
 class ToolState {
   tool = null
+
   constructor() {
     makeAutoObservable(this)
   }
 
   setTool(tool) {
+    const oldTool = this.tool
     this.tool = tool
+    if (oldTool) {
+      this.tool.fill = oldTool.fillStyle
+      this.tool.color = oldTool.strokeStyle
+      this.tool.line = oldTool.lineWidth
+    }
   }
 
   setFillColor(color) {
-    this.tool.fillColor = color
+    this.tool.fill = color
   }
 
   setStrokeColor(color) {
-    this.tool.strokeColor = color
+    this.tool.color = color
   }
 
   setLineWidth(size) {
-    this.tool.lineWidth = size
+    this.tool.line = size
   }
 }
 

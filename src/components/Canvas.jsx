@@ -9,7 +9,8 @@ import Rect from '../tools/Rect'
 import Circle from '../tools/Circle'
 import Line from '../tools/Line'
 import { MyModal } from './Ui/modal/MyModal'
-import axios from 'axios'
+import api from '../Api/ImageService'
+import {socket} from '../helpers/ws'
 
 export const Canvas = observer(() => {
   const canvasRef = useRef()
@@ -20,7 +21,7 @@ export const Canvas = observer(() => {
   useEffect(() => {
     canvasState.setCanvas(canvasRef.current)
     let ctx = canvasRef.current.getContext('2d')
-    axios.get(`https://mohdan-online-paint.herokuapp.com/image?id=${params.id}`, {withCredentials: true})
+    api.getImage(params.id)
       .then(response => {
         const img = new Image()
         img.src = response.data
@@ -34,19 +35,16 @@ export const Canvas = observer(() => {
 
   useEffect(() => {
     if (canvasState.username) {
-      const socket = new WebSocket(`wss://mohdan-online-paint.herokuapp.com`)
       canvasState.setSocket(socket)
       canvasState.setSessionId(params.id)
       // дефолтный инструмент при инициализации - кисточка
       toolState.setTool(new Brush(canvasRef.current, socket, params.id))
-      socket.onopen = () => {
-        console.log('react connect');
-        socket.send(JSON.stringify({
-          id: params.id,
-          username: canvasState.username,
-          method: 'connection'
-        }))
-      }
+
+      socket.send(JSON.stringify({
+        id: params.id,
+        username: canvasState.username,
+        method: 'connection'
+      }))
       socket.onmessage = (event) => {
         let msg = JSON.parse(event.data)
         switch (msg.method) {
@@ -65,28 +63,40 @@ export const Canvas = observer(() => {
   }, [canvasState.username])
 
   const drawHandler = (msg) => {
-    const figure = msg.figure
+    const draw = msg.draw
     const ctx = canvasRef.current.getContext('2d')
-    switch (figure.type) {
+    switch (draw.type) {
       case 'brush':
-        Brush.draw(ctx, figure.x, figure.y, figure.color, figure.lineWidth)
+        Brush.staticDraw(ctx, draw.x, draw.y, draw.color, draw.lineWidth)
         break
       case 'eraser':
-        Eraser.draw(ctx, figure.x, figure.y, figure.lineWidth)
+        Eraser.staticDraw(ctx, draw.x, draw.y, draw.lineWidth)
         break
       case "rect":
-        Rect.staticDraw(ctx, figure.x, figure.y, figure.width, figure.height, figure.color, figure.strokeColor, figure.lineWidth)
+        Rect.staticDraw(ctx, draw.x, draw.y, draw.width, draw.height, draw.color, draw.strokeColor, draw.lineWidth)
         break
       case "circle":
-        Circle.staticDraw(ctx, figure.x, figure.y, figure.r, figure.color, figure.strokeColor, figure.lineWidth)
+        Circle.staticDraw(ctx, draw.x, draw.y, draw.r, draw.color, draw.strokeColor, draw.lineWidth)
         break
       case "line":
-        Line.staticDraw(ctx, figure.x, figure.y, figure.startX, figure.startY, figure.color, figure.lineWidth)
+        Line.staticDraw(ctx, draw.x, draw.y, draw.startX, draw.startY, draw.color, draw.lineWidth)
         break
       case 'clear':
         canvasState.clear()
         break
+      case 'undo':
+        canvasState.undo()
+        break
+      case 'redo':
+        canvasState.redo()
+        break
+      case "push-to-undo":
+        canvasState.pushToUndo(canvasRef.current.toDataURL())
+        break
       case "finish":
+        ctx.strokeStyle = toolState.tool.strokeStyle
+        ctx.lineWidth = toolState.tool.lineWidth
+        ctx.fillStyle = toolState.tool.fillStyle
         ctx.beginPath()
         break
       default: 
@@ -95,12 +105,9 @@ export const Canvas = observer(() => {
     }
   }
 
-  const mouseDownHandler = () => {
-    canvasState.pushToUndo(canvasRef.current.toDataURL())
-  }
 
   const postImage = () => {
-    axios.post(`https://mohdan-online-paint.herokuapp.com/image?id=${params.id}`, {img: canvasState.canvas.toDataURL()}, {withCredentials: true})
+    api.postImage(params.id, canvasState.canvas.toDataURL())
   }
 
   const connectHandler = () => {
@@ -108,11 +115,21 @@ export const Canvas = observer(() => {
     setModal(false)
   }
 
+  const mouseDownHandler = () => {
+    socket.send(JSON.stringify({
+      id: params.id,
+      method: 'draw',
+      draw: {
+        type: 'push-to-undo',
+      }
+    }))
+  }
+
   return (
     <div className='canvas'>
       <MyModal visible={modal} setVisible={setModal}>
         <h1>Введите ваше имя</h1>
-        <input type="text" ref={usernameRef}/>
+        <input autoFocus type="text" ref={usernameRef}/>
         <button onClick={() => connectHandler()}>
           Войти
         </button>
